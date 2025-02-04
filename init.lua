@@ -22,17 +22,21 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
   {'ThePrimeagen/harpoon'},
+  {
+    'windwp/nvim-autopairs',
+    event = "InsertEnter",
+    config = true
+    -- use opts = {} for passing setup options
+    -- this is equivalent to setup({}) function
+  },
   {'nvim-telescope/telescope.nvim', tag = '0.1.8',
 	-- or                              , branch = '0.1.x',
     dependencies = { 'nvim-lua/plenary.nvim' }},
   {'mbbill/undotree'},
   {'tpope/vim-fugitive'},
+  {'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'},
   { "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = ...},
   { "rose-pine/neovim", name = "rose-pine" },
-  {
-        'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate'
-  },
   {"williamboman/mason.nvim"},
   {"williamboman/mason-lspconfig.nvim"},
   {'neovim/nvim-lspconfig'},
@@ -67,5 +71,21 @@ require'lspconfig'.lua_ls.setup {
     },
   },
 }
+-- Minimal autocomplete configuration
+
+local cmp = require('cmp')
+
+cmp.setup({
+  sources = {
+    {name = 'nvim_lsp'},
+  },
+  snippet = {
+    expand = function(args)
+      -- You need Neovim v0.10 to use vim.snippet
+      vim.snippet.expand(args.body)
+    end,
+  },
+  mapping = {["<tab>"] = cmp.mapping.select_next_item()},
+})
 
 vim.cmd('colorscheme rose-pine')
