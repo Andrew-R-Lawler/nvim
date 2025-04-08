@@ -26,8 +26,6 @@ require("lazy").setup({
     'windwp/nvim-autopairs',
     event = "InsertEnter",
     config = true
-    -- use opts = {} for passing setup options
-    -- this is equivalent to setup({}) function
   },
   {'nvim-telescope/telescope.nvim', tag = '0.1.8',
 	-- or                              , branch = '0.1.x',
@@ -41,12 +39,20 @@ require("lazy").setup({
   {"williamboman/mason-lspconfig.nvim"},
   {'neovim/nvim-lspconfig'},
   {'hrsh7th/cmp-nvim-lsp'},
+  {'alvan/vim-closetag'},
   {'hrsh7th/nvim-cmp'},
-    -- add your plugins here
+  {
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    config = function()
+        require("nvim-surround").setup({
+            -- Configuration here, or leave empty to use defaults
+        })
+    end
+},
+  {'mlaursen/vim-react-snippets'},
   },
-  -- Configure any other settings here. See the documentation for more details.
-  -- colorscheme that will be used when installing plugins.
-  -- automatically check for plugin updates
   checker = { enabled = true },
 })
 
@@ -54,7 +60,7 @@ require('mason').setup({})
 require('mason-lspconfig').setup({
   -- Replace the language servers listed here
   -- with the ones you want to install
-  ensure_installed = {'lua_ls', 'rust_analyzer', 'gopls'},
+  ensure_installed = {'lua_ls', 'rust_analyzer', 'gopls' }, 
   handlers = {
     function(server_name)
       require('lspconfig')[server_name].setup({})
@@ -71,6 +77,21 @@ require'lspconfig'.lua_ls.setup {
     },
   },
 }
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+require'lspconfig'.emmet_ls.setup({
+    -- on_attach = on_attach,
+    capabilities = capabilities,
+    filetypes = { "css", "eruby", "html", "javascript", "javascriptreact", "less", "sass", "scss", "svelte", "pug", "typescriptreact", "vue", "tsx" },
+    init_options = {
+      html = {
+        options = {
+          -- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
+          ["bem.enabled"] = true,
+        },
+      },
+    }
+})
 -- Minimal autocomplete configuration
 
 local cmp = require('cmp')
@@ -85,7 +106,15 @@ cmp.setup({
       vim.snippet.expand(args.body)
     end,
   },
-  mapping = {["<tab>"] = cmp.mapping.select_next_item()},
+  mapping = {
+      ["<C-k>"] = cmp.mapping.select_prev_item(),
+      ["<C-j>"] = cmp.mapping.select_next_item(),
+      ["<C-Space>"] = cmp.mapping.complete(),
+      ["<CR>"] = cmp.mapping.confirm({ select = true }),
+  },
 })
+
+-- nvim-surround configuration
+
 
 vim.cmd('colorscheme rose-pine')
