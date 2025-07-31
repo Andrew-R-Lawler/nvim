@@ -35,8 +35,23 @@ require("lazy").setup({
   {'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'},
   { "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = ...},
   { "rose-pine/neovim", name = "rose-pine" },
-  {"williamboman/mason.nvim"},
-  {"williamboman/mason-lspconfig.nvim"},
+  {"williamboman/mason.nvim", version = "1.11.0"},
+  {"williamboman/mason-lspconfig.nvim", version = "1.32.0"},
+  {
+    'stevearc/conform.nvim',
+    opts = {},
+    config = function()
+        require("conform").setup({
+            formatters_by_ft = {
+                lua = { "stylua" },
+                go = { "gofmt" },
+                javascript = { "prettier" },
+                typescript = { "prettier" },
+                elixir = { "mix" }
+            }
+        })
+    end
+  },
   {'neovim/nvim-lspconfig'},
   {'hrsh7th/cmp-nvim-lsp'},
   {'alvan/vim-closetag'},
@@ -60,7 +75,7 @@ require('mason').setup({})
 require('mason-lspconfig').setup({
   -- Replace the language servers listed here
   -- with the ones you want to install
-  ensure_installed = {'lua_ls', 'rust_analyzer', 'gopls' }, 
+  ensure_installed = {'lua_ls', 'rust_analyzer', 'gopls', 'eslint' }, 
   handlers = {
     function(server_name)
       require('lspconfig')[server_name].setup({})
